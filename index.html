@@ -41,11 +41,11 @@
 
                 <div>
                     <ul class="list-group" id="search-history">
-                        <li class="list-group-item">Montreal</li>
+                        <!-- <li class="list-group-item">Montreal</li>
                         <li class="list-group-item">Toronto</li>
                         <li class="list-group-item">Hong Kong</li>
                         <li class="list-group-item">Taipei</li>
-                        <li class="list-group-item">Tokyo</li>
+                        <li class="list-group-item">Tokyo</li> -->
                     </ul>
                 </div>
             </div>
@@ -54,27 +54,29 @@
                 <div class="border mb-2 p-3">
                     <h2>
                         <span id="cityName">Toronto</span>
-                        <span id="date">10/31/2020</span>
-                        <span id="iconWeather"><i class="fas fa-cloud"></i></span>
+                        <span id="date">10/20/2020</span><span id="iconWeather"></span>
                     </h2>
-                    <p id="temperature" class="current-stats">
-                        Temperature: 7&#8451; 
+                    <p class="current-stats">
+                        Temperature:
+                        <span id="temperature">7</span>&#8451; 
                     </p>
-                    <p id="humidity" class="current-stats">
-                        Humity: 62%; 
+                    <p class="current-stats">
+                        Humity:
+                        <span  id="humidity">62</span>%; 
                     </p>
-                    <p id="wind-speed" class="current-stats">
-                        Wind Speed: 18 km/h; 
+                    <p class="current-stats">
+                        Wind Speed:
+                        <span  id="wind-speed">18</span>km/h; 
                     </p>
-                    <p id="uv-index" class="current-stats">
+                    <p class="current-stats">
                         UV Index:
-                        <span id="uv-value" class="rounded-sm p-2">2</span>
+                        <span id="uv-index" class="rounded-sm p-2">2</span>
                     </p>
                 </div>
                 <div class="border">
                     <h3>5-day forecast</h3>
                     <div id="weekly-forecast">
-                        
+
                     </div>
                 </div>
             </div>
@@ -83,6 +85,7 @@
     
     <!--javascript files-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="./assets/js/script.js"></script>
 </body>
