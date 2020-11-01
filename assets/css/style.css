@@ -15,3 +15,12 @@ p {
 #uv-value{
     background-color: green;
 }
+
+.weather-icon {
+    width: 70px;
+    height: 70px;
+}
+
+li {
+    cursor: pointer;
+}
