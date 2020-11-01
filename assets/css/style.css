@@ -1,0 +1,17 @@
+header {
+    height: 100px;
+    color: white;
+    background-color:#041d5e;
+    text-align: center;
+}
+
+h1 {
+    line-height: 100px;
+}
+
+p {
+    font-size: 20px;
+}
+#uv-value{
+    background-color: green;
+}
