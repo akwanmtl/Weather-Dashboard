@@ -9,9 +9,9 @@ h1 {
     line-height: 100px;
 }
 
-.hidden {
+/* .hidden {
     visibility: hidden;
-}
+} */
 
 .current-stats {
     font-size: 20px;

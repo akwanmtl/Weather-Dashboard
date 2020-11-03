@@ -33,7 +33,7 @@ $(document).ready(function() {
                     return false;
                 }
                 
-                addHistory(data.name);
+                addHistory(data.name+", "+data.sys.country);
                 $("#cityName").text(data.name);
                 $("#temperature").text(Math.round(parseInt(data.main.temp)));
                 $("#humidity").text(data.main.humidity);
@@ -76,7 +76,7 @@ $(document).ready(function() {
                     $("#uv-index").attr("style","background-color:fuchsia");
                 }
 
-                $(".hidden").attr("style","visibility:visible");
+                // $(".hidden").attr("style","visibility:visible");
             });
 
         fetch(requestForecast)
@@ -105,7 +105,6 @@ $(document).ready(function() {
                     // console.log(check,value.dt_txt);
                     // console.log(check===value.dt_txt);
                     if (value.dt_txt === check){
-                        dayCounter++;
 
                         var temperature = Math.round(parseFloat(value.main.temp));
                         var humidity = value.main.humidity;
@@ -117,13 +116,16 @@ $(document).ready(function() {
                         // console.log(iconId,iconDescription)
                         var iconUrl = "http://openweathermap.org/img/wn/"+iconId+"@2x.png";
                         var newItem = $("<div>");
-                        newItem.addClass("col-sm-4 col-md-3 col-lg-2 weekly border rounded m-2");
+                        newItem.addClass("col-5 col-sm-5 col-md-3 col-lg-2 weekly border rounded m-2");
                         newItem.append("<h6>"+day+"</h6>");
                         newItem.append("<img src="+iconUrl+" alt="+iconDescription+" class='weather-icon'>");
                         newItem.append("<p>Temperature: "+temperature+"\xB0C</p>");
                         newItem.append("<p>Humidity: "+humidity+"%</p>");
     
                         $("#weekly-forecast").append(newItem);
+
+                        
+                        dayCounter++;
                     }
                 });
 
