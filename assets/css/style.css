@@ -9,7 +9,11 @@ h1 {
     line-height: 100px;
 }
 
-p {
+.hidden {
+    visibility: hidden;
+}
+
+.current-stats {
     font-size: 20px;
 }
 #uv-value{
@@ -23,4 +27,27 @@ p {
 
 li {
     cursor: pointer;
+}
+
+.weekly {
+    color: white;
+    background-color:#2f80b6;
+    padding-top:20px;
+}
+
+.weekly p{
+    font-size:14px;
+}
+
+.form-inline .form-control {
+    width: 60%;
+}
+
+
+@media (max-width: 767px) {
+    .form-inline .form-control {
+    display: inline-block;
+    width: 60%;
+    vertical-align: middle;
+    }
 }
