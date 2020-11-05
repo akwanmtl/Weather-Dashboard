@@ -1,12 +1,12 @@
 $(document).ready(function() {
 
+    // declare variables
     var savedCities = [];
-    var apiKey = "69dc4c13998c8b7a4772ce179c71adcb";
-    var todayDate = moment().format("MM/DD/YYYY");
-    $("#date").text(todayDate);
-
+    var now = moment();
+    
     initialize();
 
+    // initalizes the list of cities in search histories from local storage
     function initialize(){
         var cities = JSON.parse(localStorage.getItem("cities"));
         if(cities){
@@ -16,12 +16,15 @@ $(document).ready(function() {
         }
     }
     
+    // function that calls 2 apis to get the current weather and 5 day forecast
     function getCurrentWeather(city) {
-        // fetch request gets a list of all the repos for the node.js organization
+        
+        // urls to request data
+        var apiKey = "69dc4c13998c8b7a4772ce179c71adcb";
         var requestWeather = 'https://api.openweathermap.org/data/2.5/weather?q='+city+'&units=metric&APPID='+apiKey;
         var requestForecast = 'https://api.openweathermap.org/data/2.5/forecast?q='+city+'&units=metric&APPID='+apiKey;
         
-
+        // fetch request for current weather
         fetch(requestWeather)
             .then(function (response) {
                 return response.json();
@@ -38,6 +41,7 @@ $(document).ready(function() {
                 $("#temperature").text(Math.round(parseInt(data.main.temp)));
                 $("#humidity").text(data.main.humidity);
                 $("#wind-speed").text((parseFloat(data.wind.speed)*3.6).toFixed(2));
+                $("#date").text(now.format("MM/DD/YYYY"));
 
                 var iconId = data.weather[0].icon;
                 
@@ -46,7 +50,7 @@ $(document).ready(function() {
                 // console.log(iconId,iconDescription)
                 var iconUrl = "http://openweathermap.org/img/wn/"+iconId+"@2x.png";
                 $("#iconWeather").empty();
-                $("#iconWeather").append("<img src="+iconUrl+" alt="+iconDescription+" class='weather-icon'>");
+                $("#iconWeather").append("<img src="+iconUrl+" alt="+iconDescription+" class='weather-icon-current'>");
                 var lat = data.coord.lat;
                 var lon = data.coord.lon;
                 var requestUV = 'http://api.openweathermap.org/data/2.5/uvi?lat='+lat+'&lon='+lon+'&appid='+apiKey;
@@ -76,7 +80,6 @@ $(document).ready(function() {
                     $("#uv-index").attr("style","background-color:fuchsia");
                 }
 
-                // $(".hidden").attr("style","visibility:visible");
             });
 
         fetch(requestForecast)
@@ -96,15 +99,17 @@ $(document).ready(function() {
                 // console.log('weekly');
                 var dayCounter = 1;
                 $.each(forecast,function(index,value){
-                    var hour = Math.floor(parseInt(moment().format('H'))/3)*3;
+                    // var hour = Math.floor(parseInt(moment().format('H'))/3)*3;
                     
-                    hour = (hour >= 10)? hour: "0"+hour;
+                    // hour = (hour >= 10)? hour: "0"+hour;
                     // console.log(hour)
                     
-                    var check = moment().add(dayCounter,'days').format("YYYY-MM-DD")+" "+hour+":00:00";                    
+                    var check = moment().add(dayCounter,'days').format("YYYY-MM-DD")+" 12:00:00";                    
                     // console.log(check,value.dt_txt);
                     // console.log(check===value.dt_txt);
                     if (value.dt_txt === check){
+
+                        console.log(value.dt_txt);
 
                         var temperature = Math.round(parseFloat(value.main.temp));
                         var humidity = value.main.humidity;
@@ -118,7 +123,7 @@ $(document).ready(function() {
                         var newItem = $("<div>");
                         newItem.addClass("col-5 col-sm-5 col-md-3 col-lg-2 weekly border rounded m-2");
                         newItem.append("<h6>"+day+"</h6>");
-                        newItem.append("<img src="+iconUrl+" alt="+iconDescription+" class='weather-icon'>");
+                        newItem.append("<img src="+iconUrl+" alt="+iconDescription+" class='weather-icon-weekly'>");
                         newItem.append("<p>Temperature: "+temperature+"\xB0C</p>");
                         newItem.append("<p>Humidity: "+humidity+"%</p>");
     
@@ -165,6 +170,7 @@ $(document).ready(function() {
             $('[data-city="'+removedCity+'"]').remove();
         }
     }
+
 
     $("button").on("click",function(event){
         event.preventDefault();
