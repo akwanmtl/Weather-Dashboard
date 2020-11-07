@@ -1,8 +1,7 @@
 $(document).ready(function() {
-
+    
     // declare variables
     var savedCities = [];
-    var now = moment();
     
     initialize();
 
@@ -14,8 +13,14 @@ $(document).ready(function() {
                 addHistory(city);
             });
         }
+        setTimeout(function(){
+            // $('#body').attr("style","visibility:visible");
+            $('#body').css("visibility","visible");
+        },0);
+        // $('#body').attr("style","visibility:visible");
     }
     
+
     // function that calls 2 apis to get the current weather and 5 day forecast
     function getCurrentWeather(city) {
         
@@ -27,21 +32,33 @@ $(document).ready(function() {
         // fetch request for current weather
         fetch(requestWeather)
             .then(function (response) {
-                return response.json();
+                if(response.status === 404){
+                    $(".feedback").css("visibility","visible");
+                    // setTimeout(function(){
+                    //     $(".feedback").css("visibility","hidden");
+                    // },1000);
+                    throw new Error("Invalid city name");
+                }
+                else{
+                    return response.json();
+                }
             })
             .then(function (data) {
                 console.log("current",data)
                 
-                if(data.cod=== "404"){
-                    return false;
-                }
+                // if(data.cod=== "404"){
+                //     console.log('error')
+                //     return false;
+                // }
                 
+                $("#city").val("");
+
                 addHistory(data.name+", "+data.sys.country);
                 $("#cityName").text(data.name);
                 $("#temperature").text(Math.round(parseInt(data.main.temp)));
                 $("#humidity").text(data.main.humidity);
                 $("#wind-speed").text((parseFloat(data.wind.speed)*3.6).toFixed(2));
-                $("#date").text(now.format("MM/DD/YYYY"));
+                $("#date").text(moment.unix(data.dt+data.timezone).utc().format("MM/DD/YYYY"));
 
                 var iconId = data.weather[0].icon;
                 
@@ -61,7 +78,7 @@ $(document).ready(function() {
                 return response.json();
             })
             .then(function (data) {
-                // console.log(data)
+                console.log("uv", data);
                 var uv = data.value
                 $("#uv-index").text(uv);
                 if(uv < 3){
@@ -80,11 +97,26 @@ $(document).ready(function() {
                     $("#uv-index").attr("style","background-color:fuchsia");
                 }
 
+                
+
+                // var dateCity = data.date_iso; // "2020-11-07T12:00:00Z"
+                // dateCity = dateCity.substring(0,dateCity.indexOf("T"));
+                // $("#date").text(moment(dateCity,"YYYY-MM-DD").format("MM/DD/YYYY"));
+
+            })
+            .catch(function(err){
+                console.log(err);
             });
 
         fetch(requestForecast)
             .then(function (response) {
-                return response.json();
+                if(response.status === 404){
+                    console.log('not a city');
+                    throw new Error("Invalid city name");
+                }
+                else{
+                    return response.json();
+                }
             })
             .then(function (data) {
                 console.log(data)
@@ -96,20 +128,13 @@ $(document).ready(function() {
                 $("#weekly-forecast").empty();
 
                 var forecast = data.list;
-                // console.log('weekly');
                 var dayCounter = 1;
-                $.each(forecast,function(index,value){
-                    // var hour = Math.floor(parseInt(moment().format('H'))/3)*3;
-                    
-                    // hour = (hour >= 10)? hour: "0"+hour;
-                    // console.log(hour)
-                    
-                    var check = moment().add(dayCounter,'days').format("YYYY-MM-DD")+" 12:00:00";                    
-                    // console.log(check,value.dt_txt);
-                    // console.log(check===value.dt_txt);
-                    if (value.dt_txt === check){
 
-                        console.log(value.dt_txt);
+                $.each(forecast,function(index,value){
+                                        
+                    var check = moment().add(dayCounter,'days').format("YYYY-MM-DD")+" 12:00:00";                    
+                    
+                    if (value.dt_txt === check){
 
                         var temperature = Math.round(parseFloat(value.main.temp));
                         var humidity = value.main.humidity;
@@ -121,7 +146,7 @@ $(document).ready(function() {
                         // console.log(iconId,iconDescription)
                         var iconUrl = "http://openweathermap.org/img/wn/"+iconId+"@2x.png";
                         var newItem = $("<div>");
-                        newItem.addClass("col-5 col-sm-5 col-md-3 col-lg-2 weekly border rounded m-2");
+                        newItem.addClass("col-5 col-sm-5 col-md-3 col-lg-2 weekly border rounded-lg m-2");
                         newItem.append("<h6>"+day+"</h6>");
                         newItem.append("<img src="+iconUrl+" alt="+iconDescription+" class='weather-icon-weekly'>");
                         newItem.append("<p>Temperature: "+temperature+"\xB0C</p>");
@@ -134,6 +159,9 @@ $(document).ready(function() {
                     }
                 });
 
+            })
+            .catch(function(err){
+                console.log(err);
             });   
             
     }
@@ -147,7 +175,7 @@ $(document).ready(function() {
             $("#search-history").prepend(newCity);
             savedCities.push(city);
             exceedNum();
-            console.log(savedCities);
+            // console.log(savedCities);
             localStorage.setItem("cities",JSON.stringify(savedCities));
         }
         else{
@@ -155,10 +183,10 @@ $(document).ready(function() {
             savedCities.splice(index,1);
             savedCities.push(city);
             exceedNum();
-            console.log('[data-city="'+city+'"]');
+            // console.log('[data-city="'+city+'"]');
             $("#search-history").prepend($('[data-city="'+city+'"]'));
             localStorage.setItem("cities",JSON.stringify(savedCities));
-            console.log(savedCities);
+            // console.log(savedCities);
         }
 
     }
@@ -180,15 +208,20 @@ $(document).ready(function() {
         }
 
         getCurrentWeather($("#city").val());
-        $("#city").val("");
         
     });
+
+    $("#city").on("click",function(event){
+        $(".feedback").css("visibility","hidden");        
+    });
+        
 
     $("ul").click(function(event){
 
         if($(event.target).is("li")){
             
-            console.log($(event.target).text());
+            $(".feedback").css("visibility","hidden");
+            // console.log($(event.target).text());
             getCurrentWeather($(event.target).text());
             
         }
