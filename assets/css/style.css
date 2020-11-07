@@ -1,3 +1,4 @@
+/*body content style - remains hidden until page is finished loading*/
 #body{
     visibility: hidden;
 }
