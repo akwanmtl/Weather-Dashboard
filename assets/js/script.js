@@ -43,7 +43,7 @@ $(document).ready(function() {
                 }
             })
             .then(function (data) {
-                console.log("current",data)
+                // console.log("current",data)
                 
                 //empty the input text field
                 $("#city").val("");
@@ -78,7 +78,7 @@ $(document).ready(function() {
             })
             .then(function (data) {
 
-                console.log('uv',data)
+                // console.log('uv',data)
                 var uv = data.value;
 
                 $("#uv-index").text(uv);
@@ -108,7 +108,7 @@ $(document).ready(function() {
             .then(function (response) {
                 // if the city cannot be found, throw an error to stop the promise
                 if(response.status === 404){
-                    console.log('not a city');
+                    // console.log('not a city');
                     throw new Error("Invalid city name");
                 }
                 // else return the response that has been parsed
@@ -117,54 +117,66 @@ $(document).ready(function() {
                 }
             })
             .then(function (data) {
-                console.log(data);
+                // console.log(data);
                 
                 //remove any previous 5 day forecast
                 $("#weekly-forecast").empty();
 
+                // set the list of data in to the forecast variable
                 var forecast = data.list;
-                // var startDate = moment.unix(data.city.sunrise+data.city.timezone).utc().format("YYYY-MM-DD");
-                var startDate = moment.unix(forecast[0].dt+data.city.timezone).utc().format("YYYY-MM-DD")
-                console.log(startDate);
+
+                // set the start date as the first entrie - shifted by the timezone.
+                var startDate = moment.unix(forecast[0].dt+data.city.timezone).utc().format("YYYY-MM-DD");
                 
+                // initalize an object with properties of the dates in the forecast that will each contain an empty array
                 var groupedForecast = {};
                 for(var i = 0; i < 6; i++){
                     groupedForecast[moment(startDate,"YYYY-MM-DD").add(i,'days').format("YYYY-MM-DD")] = [];
                 }
-                console.log('hello',groupedForecast);
 
+                // goes through the list of forecast and push the array for that date, the important values
                 $.each(forecast,function(index,value){
                     var temperature = value.main.temp;//Math.round(parseFloat(value.main.temp));
                     var humidity = value.main.humidity;
                     var iconId = value.weather[0].icon;
                     var iconDescription = value.weather[0].description;
                     var day = moment.unix(value.dt+data.city.timezone).utc().format("YYYY-MM-DD");
-                    var time = moment.unix(value.dt+data.city.timezone).utc().format("HH:MM:SS");
-                    console.log(day + " " + time)
+                    var time = moment.unix(value.dt+data.city.timezone).utc().format("HH:mm:ss");
+                    var hour = parseInt(moment.unix(value.dt+data.city.timezone).utc().format("HH"));
+                    // console.log(value.dt + data.city.timezone);
+                    // console.log(day + " " + time);
                     groupedForecast[day].push({
                         temperature: temperature,
                         humidity : humidity,
                         iconId: iconId,
                         iconDescription : iconDescription,
-                        time: time
+                        time: time,
+                        hour: hour
                     });
                 });
 
-                console.log(groupedForecast);
+                // console.log(groupedForecast);
 
-
-                if(parseInt(moment.unix(forecast[0].dt+data.city.timezone).utc().format("HH")) > 14){
+                // check the first if the first entry the time of the day is greater than 12H 
+                // if it is greater than 12 H, then the startdate for the 5 day forecast will be th following day
+                // if not, the first day of the 5 day forecast will be of the same day. 
+                // If we were to try to get the forecast for the 5 following days, the last day would not have pertinent information (e.g. before 9 am)
+                if(parseInt(moment.unix(forecast[0].dt+data.city.timezone).utc().format("HH")) > 12){
                     startDate = moment(startDate,"YYYY-MM-DD").add(1,'days').format("YYYY-MM-DD");
                 }
 
+                // goes through the days of the 5 day forecast using startDate as the first day
                 for(var i = 0; i < 5; i++){
+                    // adds i days to the startDate
                     var date = moment(startDate,"YYYY-MM-DD").add(i,'days').format("YYYY-MM-DD");
                     var dayForecast = groupedForecast[date];
                     
+                    // sort the array of object based on how close the time is to 12 in ascending order
                     dayForecast.sort(function(a,b){
-                        return b.temperature - a.temperature;
+                        return Math.abs(a.hour - 12) - Math.abs(b.hour - 12);
                     });
 
+                    // creates a new element that will contain the information
                     var iconUrl = "http://openweathermap.org/img/wn/"+dayForecast[0].iconId+"@2x.png";
                     var newItem = $("<div>");
                     newItem.addClass("col-5 col-sm-5 col-md-3 col-lg-2 weekly border rounded-lg m-2");
@@ -173,50 +185,16 @@ $(document).ready(function() {
                     newItem.append("<p>Temperature: "+Math.round(parseFloat(dayForecast[0].temperature))+"\xB0C</p>");
                     newItem.append("<p>Humidity: "+dayForecast[0].humidity+"%</p>");
 
+                    // appends to the weekly-forecast section
                     $("#weekly-forecast").append(newItem);
 
                 }
-                /*
-                var forecast = data.list;
-                var dayCounter = 1;
-
-                $.each(forecast,function(index,value){
-
-                    console.log(moment.unix(value.dt+data.city.timezone).utc().format("YYYY-MM-DD HH:MM:SS"))
-                                        
-                    var check = moment().add(dayCounter,'days').format("YYYY-MM-DD")+" 12:00:00";                    
-                    
-                    if (value.dt_txt === check){
-
-                        var temperature = Math.round(parseFloat(value.main.temp));
-                        var humidity = value.main.humidity;
-                        var day = moment().add(dayCounter,'days').format("MM/DD/YYYY");
-    
-                        var iconId = value.weather[0].icon;
-                        var iconDescription = value.weather[0].description;
-        
-                        // console.log(iconId,iconDescription)
-                        var iconUrl = "http://openweathermap.org/img/wn/"+iconId+"@2x.png";
-                        var newItem = $("<div>");
-                        newItem.addClass("col-5 col-sm-5 col-md-3 col-lg-2 weekly border rounded-lg m-2");
-                        newItem.append("<h6>"+day+"</h6>");
-                        newItem.append("<img src="+iconUrl+" alt="+iconDescription+" class='weather-icon-weekly'>");
-                        newItem.append("<p>Temperature: "+temperature+"\xB0C</p>");
-                        newItem.append("<p>Humidity: "+humidity+"%</p>");
-    
-                        $("#weekly-forecast").append(newItem);
-
-                        
-                        dayCounter++;
-                    }
-                });
-                 */
 
             })
             //throw any unexpected error
-            // .catch(function(err){
-            //     console.log(err);
-            // });   
+            .catch(function(err){
+                console.log(err);
+            });   
             
     }
       
@@ -238,14 +216,14 @@ $(document).ready(function() {
             //checks if there are are more then 10 using the function exceedNum
             if(savedCities.length > 10){
                 var removedCity = savedCities.splice(0,1);
-                console.log(removedCity);
+                // console.log(removedCity);
                 $('[data-city="'+removedCity+'"]').remove();
             }
             //save the array local storage with the key cities
             localStorage.setItem("cities",JSON.stringify(savedCities));
         }
 
-        // if city exists in teh list
+        // if city exists in the list
         else{
             // move the city at the end of the array
             var index = savedCities.indexOf(city);
