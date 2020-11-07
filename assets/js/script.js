@@ -68,7 +68,7 @@ $(document).ready(function() {
                 //get the latitude and longitude value that are needed to request the url for uv index
                 var lat = data.coord.lat;
                 var lon = data.coord.lon;
-                var requestUV = 'http://api.openweathermap.org/data/2.5/uvi?lat='+lat+'&lon='+lon+'&appid='+apiKey;
+                var requestUV = 'https://api.openweathermap.org/data/2.5/uvi?lat='+lat+'&lon='+lon+'&appid='+apiKey;
     
                 //request uv index
                 return fetch(requestUV);
