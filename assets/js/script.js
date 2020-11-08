@@ -3,7 +3,6 @@ $(document).ready(function() {
     // declare variables
     var savedCities = [];
     
-    initialize();
 
     // initalizes the list of cities in search histories from local storage
     function initialize(){
@@ -13,11 +12,11 @@ $(document).ready(function() {
                 addHistory(city);
             });
         }
+        //this allows for everything to be loaded, including the fontawesome, google font to be loaded
         setTimeout(function(){
-            // $('#body').attr("style","visibility:visible");
             $('#body').css("visibility","visible");
         },0);
-        // $('#body').attr("style","visibility:visible");
+        // $('#body').css("visibility","visible");
     }
     
 
@@ -237,6 +236,7 @@ $(document).ready(function() {
         }
     }
 
+    initialize();
 
     // listens for when the user searches for a city
     $("button").on("click",function(event){
