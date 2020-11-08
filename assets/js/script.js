@@ -252,8 +252,8 @@ $(document).ready(function() {
         
     });
 
-    // listens for when the user clicks on the input field to remove the feedback if any
-    $("#city").on("click",function(event){
+    // listens for when the user clicks and changes to the input field to remove the feedback if any
+    $("#city").on('keydown paste input click',function(event){
         $(".feedback").css("visibility","hidden");        
     });
         
