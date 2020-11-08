@@ -46,6 +46,7 @@ $(document).ready(function() {
                 // console.log("current",data)
                 
                 //empty the input text field
+                $(".feedback").css("visibility","hidden");
                 $("#city").val("");
 
                 //add the name of the city and country to the list using the function addHistory
