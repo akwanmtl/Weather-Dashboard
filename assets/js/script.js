@@ -13,11 +13,9 @@ $(document).ready(function() {
                 addHistory(city);
             });
         }
-        setTimeout(function(){
-            // $('#body').attr("style","visibility:visible");
-            $('#body').css("visibility","visible");
-        },0);
-        // $('#body').attr("style","visibility:visible");
+        // setTimeout(function(){
+        //     $('#body').css("visibility","visible");
+        // },0);
     }
     
 
